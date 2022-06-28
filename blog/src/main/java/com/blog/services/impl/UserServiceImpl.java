@@ -25,13 +25,13 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserDto updateUserDto(UserDto user, Integer userId) {
-		// TODO Auto-generated method stub
+		//User user1=this.userRepo.findById(userId).orElseThrow(e->new)
 		return null;
 	}
 
 	@Override
 	public UserDto getUserDtoById(Integer userId) {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
