@@ -8,31 +8,41 @@ import com.blog.entity.User;
 import com.blog.payload.UserDto;
 import com.blog.repojetoris.UserRepo;
 import com.blog.services.UserService;
+import com.blog.exception.ResourceNotFoundException;
 
 public class UserServiceImpl implements UserService {
-	
-	@Autowired UserRepo userRepo;
+
+	@Autowired
+	UserRepo userRepo;
 
 	@Override
 	public UserDto createUser(UserDto user) {
-		
-		User user1=this.UserDtoToUser(user);
-		User saveUser=this.userRepo.save(user1);
+
+		User user1 = this.UserDtoToUser(user);
+		User saveUser = this.userRepo.save(user1);
 		return this.UserToUserDto(saveUser);
-		
-		
+
 	}
 
 	@Override
-	public UserDto updateUserDto(UserDto user, Integer userId) {
-		//User user1=this.userRepo.findById(userId).orElseThrow(e->new)
-		return null;
+	public UserDto updateUserDto(UserDto userDto, Integer userId) {
+		User user = this.userRepo.findById(userId)
+				.orElseThrow(() -> new ResourceNotFoundException("User", "Id", userId));
+
+		user.setName(userDto.getName());
+		user.setEmail(userDto.getEmail());
+		user.setPassword(userDto.getPassword());
+		user.setAbout(userDto.getAbout());
+		User updateUser=this.userRepo.save(user);
+		UserDto userDto1=this.UserToUserDto(updateUser);
+		return userDto1;
 	}
 
 	@Override
 	public UserDto getUserDtoById(Integer userId) {
-		
-		return null;
+		User user = this.userRepo.findById(userId)
+				.orElseThrow(() -> new ResourceNotFoundException("User", "Id", userId));
+		return this.UserToUserDto(user);
 	}
 
 	@Override
@@ -46,20 +56,21 @@ public class UserServiceImpl implements UserService {
 		// TODO Auto-generated method stub
 
 	}
-	
+
 	public User UserDtoToUser(UserDto userDto) {
-		User user=new User();
+		User user = new User();
 		user.setId(userDto.getId());
 		user.setName(userDto.getName());
 		user.setEmail(userDto.getEmail());
 		user.setPassword(userDto.getPassword());
 		user.setAbout(userDto.getAbout());
 		return user;
-		
+
 	}
+
 	public UserDto UserToUserDto(User user) {
-		
-		UserDto userDto=new UserDto();
+
+		UserDto userDto = new UserDto();
 		userDto.setId(user.getId());
 		userDto.setName(user.getName());
 		userDto.setEmail(user.getEmail());
@@ -67,7 +78,5 @@ public class UserServiceImpl implements UserService {
 		userDto.setAbout(user.getAbout());
 		return userDto;
 	}
-	
-	
 
 }
