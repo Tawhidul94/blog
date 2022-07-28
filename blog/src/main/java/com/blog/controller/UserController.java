@@ -8,6 +8,8 @@ package com.blog.controller;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import org.aspectj.weaver.NewConstructorTypeMunger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,13 +34,13 @@ public class UserController {
 	@Autowired private UserService userService;
 	
 	@PostMapping("/")
-	public ResponseEntity<UserDto> createUsers(@RequestBody UserDto userDto){
+	public ResponseEntity<UserDto> createUsers( @Valid @RequestBody UserDto userDto){
 		UserDto createDto=this.userService.createUser(userDto);
 		return new ResponseEntity<>(createDto,HttpStatus.CREATED);
 	}
 	
 	@PutMapping("/{userId}")
-	public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto ,@PathVariable ("userId") 
+	public ResponseEntity<UserDto> updateUser(@Valid @RequestBody UserDto userDto ,@PathVariable ("userId") 
 	Integer uid){
 		UserDto updateUserDto=this.userService.updateUserDto(userDto, uid);
 		return ResponseEntity.ok(updateUserDto);
