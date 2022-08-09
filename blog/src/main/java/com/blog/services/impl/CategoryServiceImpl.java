@@ -1,9 +1,12 @@
 package com.blog.services.impl;
 
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.blog.entity.Category;
 import com.blog.exception.ResourceNotFoundException;
@@ -11,6 +14,7 @@ import com.blog.payload.CategoryDto;
 import com.blog.repojetoris.CategoryRepo;
 import com.blog.services.CategoryService;
 
+@Service
 public class CategoryServiceImpl implements CategoryService{
 	
 	@Autowired private CategoryRepo categoryRepo;
@@ -35,20 +39,26 @@ public class CategoryServiceImpl implements CategoryService{
 
 	@Override
 	public void deleteCategory(Integer catagoryId) {
-		// TODO Auto-generated method stub
+		Category cat=this.categoryRepo.findById(catagoryId).orElseThrow(() -> 
+		new ResourceNotFoundException("Category", "catagory Id", catagoryId));
+		this.categoryRepo.delete(cat);
+
 		
 	}
 
 	@Override
 	public CategoryDto getCategory(Integer catagoryId) {
-		// TODO Auto-generated method stub
-		return null;
+		Category cat=this.categoryRepo.findById(catagoryId).orElseThrow(() -> 
+		new ResourceNotFoundException("Category", "catagory Id", catagoryId));
+		return this.modelMapper.map(cat, CategoryDto.class);
 	}
 
 	@Override
 	public List<CategoryDto> getAllCategory() {
-		// TODO Auto-generated method stub
-		return null;
+		List<Category> categories = this.categoryRepo.findAll();
+		List<CategoryDto> cateDto = categories.stream()
+				.map((cat) ->this.modelMapper.map(cat, CategoryDto.class)).collect(Collectors.toList());
+		return cateDto;
 	}
 
 }

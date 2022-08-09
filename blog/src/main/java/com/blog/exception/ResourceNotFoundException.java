@@ -1,7 +1,5 @@
 package com.blog.exception;
 
-import com.blog.payload.UserDto;
-
 import lombok.Getter;
 import lombok.Setter;
 

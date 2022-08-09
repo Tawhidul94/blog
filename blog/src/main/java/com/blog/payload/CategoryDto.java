@@ -1,5 +1,7 @@
 package com.blog.payload;
 
+import javax.validation.constraints.NotEmpty;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,9 +11,11 @@ import lombok.Setter;
 @Setter
 public class CategoryDto {
 
-	private Integer catagoryId;
+	private int catagoryId;
 	
+	@NotEmpty(message = "category title is required")
 	private String categoryTitle;
 	
+	@NotEmpty(message = "cateory description is required")
 	private String categoryDescrtion;
 }
