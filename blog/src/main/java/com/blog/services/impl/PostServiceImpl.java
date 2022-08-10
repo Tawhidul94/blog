@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.blog.entity.Category;
@@ -16,6 +17,7 @@ import com.blog.entity.Post;
 import com.blog.entity.User;
 import com.blog.exception.ResourceNotFoundException;
 import com.blog.payload.PostDto;
+import com.blog.payload.PostResponse;
 import com.blog.repojetoris.CategoryRepo;
 import com.blog.repojetoris.PostRepo;
 import com.blog.repojetoris.UserRepo;
@@ -63,12 +65,29 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public List<PostDto> getAllPosts(Integer pageNumber,Integer pageSize) {
-		Pageable pageable=PageRequest.of(pageNumber, pageSize);
+	public PostResponse getAllPosts(Integer pageNumber,Integer pageSize, String sortBy, String sortDir) {
+		
+		Sort sort=null;
+		if(sortDir.equalsIgnoreCase("asc")) {
+			sort=Sort.by(sortBy).ascending();
+		}else {
+			sort=Sort.by(sortBy).descending();
+		}
+		
+		Pageable pageable=PageRequest.of(pageNumber, pageSize,sort );
 		Page<Post> pagePost = this.postRepo.findAll(pageable);
 		List<Post> allPosts = pagePost.getContent();
 		List<PostDto> postdtos = allPosts.stream().map((post) -> this.modelMapper.map(post, PostDto.class)).collect(Collectors.toList());
-		return postdtos;
+		
+		PostResponse postResponse = new PostResponse();
+		postResponse.setContent(postdtos);
+		postResponse.setPageNumber(pagePost.getNumber());
+		postResponse.setPageSize(pagePost.getSize());
+		postResponse.setTotalElements(pagePost.getTotalElements());
+		postResponse.setTotalPages(pagePost.getTotalPages());
+		postResponse.setLastPage(pagePost.isLast());
+		
+		return postResponse;
 	}
 
 	@Override
@@ -96,9 +115,10 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public List<Post> searchPost(String keyword) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<PostDto> searchPost(String keyword) {
+		List<Post> posts = this.postRepo.searchBytitle("%"+keyword+"%");
+		List<PostDto> postDto = posts.stream().map((post) -> this.modelMapper.map(post, PostDto.class)).collect(Collectors.toList());
+		return postDto;
 	}
 
 }
